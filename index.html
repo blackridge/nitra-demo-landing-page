@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Meridian — the operating system for modern medical practice. Expense cards, finance automation, procurement, and AI patient management for independent medicine." />
+  <title>Meridian — The operating system for modern medical practice</title>
+
+  <!-- ===================================================================
+       FONTS (vendored locally — fully offline)
+       Syne   → display / headings
+       Inter  → body
+       JetBrains Mono → eyebrow labels & numerics
+  ==================================================================== -->
+  <style>
+    @font-face {
+      font-family: "Syne";
+      src: url("./fonts/syne-latin.woff2") format("woff2");
+      font-weight: 400 800; font-display: swap; font-style: normal;
+    }
+    @font-face {
+      font-family: "Inter";
+      src: url("./fonts/inter-latin.woff2") format("woff2");
+      font-weight: 100 900; font-display: swap; font-style: normal;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("./fonts/mono-latin.woff2") format("woff2");
+      font-weight: 400; font-display: swap; font-style: normal;
+    }
+  </style>
+
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <!-- ===================================================================
+       VENDORED LIBRARIES (UMD globals) — loaded NON-module so that
+       `gsap`, `ScrollTrigger`, `SplitText`, `Lenis` are global before
+       the ES module `main.js` runs. Three.js is imported by relative
+       path inside main.js (ES module). NO CDN. NO import map.
+  ==================================================================== -->
+  <script src="./vendor/gsap.min.js" defer></script>
+  <script src="./vendor/ScrollTrigger.min.js" defer></script>
+  <script src="./vendor/SplitText.min.js" defer></script>
+  <script src="./vendor/lenis.min.js" defer></script>
+</head>
+
+<body>
+  <!-- =================================================================
+       FAIL-SAFE: if JS throws before the loader lifts, this class is
+       removed by a 3s timeout in main.js so the page reveals statically.
+  ================================================================== -->
+
+  <!-- Scroll progress hairline (fills L→R as you scroll) -->
+  <div class="scroll-progress" aria-hidden="true">
+    <div class="scroll-progress__bar" data-progress-bar></div>
+    <span class="scroll-progress__pct" data-progress-pct>0%</span>
+  </div>
+
+  <!-- Film-grain overlay (animated, low opacity) -->
+  <canvas class="grain" data-grain aria-hidden="true"></canvas>
+
+  <!-- Custom cursor (dot + lagging trail). Hidden on touch. -->
+  <div class="cursor" data-cursor aria-hidden="true">
+    <div class="cursor__dot" data-cursor-dot></div>
+    <div class="cursor__trail" data-cursor-trail></div>
+  </div>
+
+  <!-- WebGL particle field (fixed, behind everything) -->
+  <canvas class="webgl" data-webgl aria-hidden="true"></canvas>
+
+  <!-- ================================ LOADER ======================== -->
+  <div class="loader" data-loader>
+    <div class="loader__inner">
+      <div class="loader__mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="56" height="56">
+          <path class="loader__mark-path" d="M6 38 V14 L24 30 L42 14 V38" fill="none"
+                stroke="#5FC9C2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="loader__word">MERIDIAN</div>
+      <div class="loader__count"><span data-loader-count>0</span><span>%</span></div>
+    </div>
+  </div>
+
+  <!-- ============================== NAV ============================= -->
+  <div class="announce" data-announce>
+    <span>New&nbsp;·&nbsp;Meridian raises $187M Series C to automate the business of medicine →</span>
+  </div>
+
+  <header class="nav" data-nav>
+    <a class="nav__brand" href="#top" data-magnetic-soft>
+      <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
+        <path d="M6 38 V14 L24 30 L42 14 V38" fill="none" stroke="#5FC9C2"
+              stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Meridian</span>
+    </a>
+
+    <nav class="nav__links" data-nav-links>
+      <a href="#features">Products</a>
+      <a href="#overview">Solutions</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#press">Resources</a>
+    </nav>
+
+    <div class="nav__actions">
+      <a class="nav__login" href="#cta">Log In</a>
+      <a class="btn btn--primary nav__cta" href="#cta" data-magnetic>See Demo</a>
+      <button class="nav__burger" data-burger aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile drawer -->
+  <div class="drawer" data-drawer aria-hidden="true">
+    <a href="#features">Products</a>
+    <a href="#overview">Solutions</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#press">Resources</a>
+    <a href="#cta">Log In</a>
+    <a class="btn btn--primary" href="#cta">See Demo</a>
+  </div>
+
+  <main id="top">
+
+    <!-- ============================ HERO (100vh) ==================== -->
+    <section class="hero" data-hero>
+      <div class="hero__grid">
+        <div class="hero__content">
+          <p class="eyebrow" data-reveal-eyebrow>Medical Practice Platform</p>
+          <h1 class="hero__title" data-hero-title>
+            The operating system for modern medical practice.
+          </h1>
+          <p class="hero__sub" data-hero-sub>
+            Meridian unifies expense cards, finance automation, procurement, and
+            AI patient management into one platform — so independent medicine runs smarter.
+          </p>
+          <div class="hero__cta" data-hero-cta>
+            <a class="btn btn--primary btn--glow" href="#cta" data-magnetic>See Demo</a>
+            <a class="btn btn--ghost" href="#features">Learn More</a>
+          </div>
+          <p class="hero__trust" data-hero-trust>
+            Trusted by <strong>700+</strong> healthcare practices across the U.S.
+          </p>
+        </div>
+
+        <!-- Product dashboard mockup (high in-fold, right half) -->
+        <div class="hero__mock" data-hero-mock>
+          <div class="mock">
+            <div class="mock__bar">
+              <span></span><span></span><span></span>
+              <em>app.meridian.health</em>
+            </div>
+            <div class="mock__body">
+              <div class="mock__side">
+                <div class="mock__logo">M</div>
+                <div class="mock__nav"><i></i><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="mock__main">
+                <div class="mock__row">
+                  <div class="mock__kpi"><span>Spend this month</span><strong>$284,910</strong><em class="up">▲ 12.4%</em></div>
+                  <div class="mock__kpi"><span>Cash back earned</span><strong>$6,267</strong><em class="up">2.2% avg</em></div>
+                </div>
+                <div class="mock__chart" data-mock-chart>
+                  <svg viewBox="0 0 320 120" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#5FC9C2" stop-opacity="0.5"/>
+                        <stop offset="1" stop-color="#5FC9C2" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0 95 C40 70 60 80 90 55 C120 30 150 60 180 40 C215 18 250 36 290 20 L320 14"
+                          fill="none" stroke="#5FC9C2" stroke-width="2.5"/>
+                    <path d="M0 95 C40 70 60 80 90 55 C120 30 150 60 180 40 C215 18 250 36 290 20 L320 14 L320 120 L0 120 Z"
+                          fill="url(#g)"/>
+                  </svg>
+                </div>
+                <div class="mock__list">
+                  <div class="mock__item"><i></i><span>McKesson Pharma · supplies</span><b>−$4,120</b></div>
+                  <div class="mock__item"><i></i><span>Henry Schein · equipment</span><b>−$1,860</b></div>
+                  <div class="mock__item"><i></i><span>Cardinal Health · recurring</span><b>−$2,540</b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a class="hero__scroll" href="#features" data-scroll-cue aria-label="Scroll down">
+        <span>Scroll</span>
+        <i></i>
+      </a>
+    </section>
+
+    <!-- ===================== VELOCITY TRUST MARQUEE ================= -->
+    <section class="marquee" data-marquee-section>
+      <p class="marquee__label eyebrow" data-reveal-heading>
+        Trusted by 700+ healthcare practices and 2,500+ professionals
+      </p>
+      <div class="marquee__track" data-marquee>
+        <!-- duplicated set for seamless loop; JS clones as needed -->
+        <div class="marquee__set" data-marquee-set>
+          <span>Mercy General</span><span>Cedar Valley Clinic</span><span>Northstar Health</span>
+          <span>Bayview Pediatrics</span><span>Summit Orthopedics</span><span>Lakeside Family Med</span>
+          <span>Vantage Dermatology</span><span>Harbor Cardiology</span><span>Cascade Womenʼs Health</span>
+          <span>Pinehurst Surgical</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= FEATURES =========================== -->
+    <section class="features" id="features">
+
+      <!-- Pillar 1 -->
+      <article class="feature feature--light" data-feature>
+        <div class="feature__text">
+          <p class="eyebrow" data-reveal-heading>Practice Expense Card</p>
+          <h2 class="feature__title" data-reveal-heading>Spending power built for the pace of medicine.</h2>
+          <p class="feature__lead">Up to 2.2% cash back on medical and healthcare purchases, with
+            instant virtual cards for every vendor and employee — and zero declines when it matters most.</p>
+          <ul class="feature__rows" data-rows>
+            <li data-row><span class="ico" data-ico="card"></span><p><strong>Up to 2.2% cash back</strong> on medical & pharma purchases.</p></li>
+            <li data-row><span class="ico" data-ico="bolt"></span><p><strong>Instant virtual cards</strong> per vendor or employee.</p></li>
+            <li data-row><span class="ico" data-ico="lock"></span><p><strong>One-tap lock</strong> & deactivate for total fraud control.</p></li>
+            <li data-row><span class="ico" data-ico="check"></span><p><strong>No declines</strong> on high-volume pharmaceutical purchasing.</p></li>
+          </ul>
+        </div>
+        <div class="feature__plate" data-plate>
+          <div class="plate plate--card">
+            <div class="vcard">
+              <div class="vcard__top"><span>MERIDIAN</span><i></i></div>
+              <div class="vcard__num">4821&nbsp;··&nbsp;··&nbsp;7390</div>
+              <div class="vcard__bot"><span>CEDAR VALLEY CLINIC</span><span>2.2%</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Pillar 2 -->
+      <article class="feature feature--light feature--reverse" data-feature>
+        <div class="feature__text">
+          <p class="eyebrow" data-reveal-heading>Finance &amp; Expense Management</p>
+          <h2 class="feature__title" data-reveal-heading>Close the books without the back office.</h2>
+          <p class="feature__lead">Automated, healthcare-specific bill pay and real-time spend analytics —
+            with AI that codes every transaction and syncs straight to your ledger.</p>
+          <ul class="feature__rows" data-rows>
+            <li data-row><span class="ico" data-ico="chart"></span><p><strong>Real-time spend analytics</strong> across every location.</p></li>
+            <li data-row><span class="ico" data-ico="ai"></span><p><strong>AI transaction coding</strong> — accurate the first time.</p></li>
+            <li data-row><span class="ico" data-ico="sync"></span><p><strong>Sync</strong> with QuickBooks, Xero, Sage & NetSuite.</p></li>
+            <li data-row><span class="ico" data-ico="clock"></span><p><strong>Save hundreds of hours</strong> of back-office work a year.</p></li>
+          </ul>
+        </div>
+        <div class="feature__plate" data-plate>
+          <div class="plate plate--ledger">
+            <div class="ledger">
+              <div class="ledger__row ledger__row--head"><span>Vendor</span><span>Coded</span><span>Amount</span></div>
+              <div class="ledger__row"><span>McKesson</span><b>Supplies</b><span>$4,120</span></div>
+              <div class="ledger__row"><span>Henry Schein</span><b>Equipment</b><span>$1,860</span></div>
+              <div class="ledger__row"><span>Cardinal</span><b>Recurring</b><span>$2,540</span></div>
+              <div class="ledger__row"><span>Stripe Payout</span><b>Income</b><span>+$9,300</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Pillar 3 -->
+      <article class="feature feature--light" data-feature>
+        <div class="feature__text">
+          <p class="eyebrow" data-reveal-heading>Procurement &amp; Marketplace</p>
+          <h2 class="feature__title" data-reveal-heading>Buy smarter across 100,000+ products.</h2>
+          <p class="feature__lead">A consolidated marketplace for medical supplies with AI price intelligence,
+            recurring orders, and real-time inventory down to the lot and expiry date.</p>
+          <ul class="feature__rows" data-rows>
+            <li data-row><span class="ico" data-ico="search"></span><p><strong>AI price intelligence</strong> scans 100,000+ products instantly.</p></li>
+            <li data-row><span class="ico" data-ico="refresh"></span><p><strong>Automated recurring orders</strong> you never have to think about.</p></li>
+            <li data-row><span class="ico" data-ico="shield"></span><p><strong>Role-based purchase controls</strong> for every team member.</p></li>
+            <li data-row><span class="ico" data-ico="box"></span><p><strong>Live inventory</strong> with lot & expiry tracking.</p></li>
+          </ul>
+        </div>
+        <div class="feature__plate" data-plate>
+          <div class="plate plate--market">
+            <div class="market">
+              <div class="market__card"><span>Nitrile Gloves · M</span><b>$8.40</b><em class="down">−18% vs avg</em></div>
+              <div class="market__card"><span>3mL Syringes</span><b>$0.12</b><em class="down">−9% vs avg</em></div>
+              <div class="market__card"><span>Exam Table Paper</span><b>$2.10</b><em class="down">−22% vs avg</em></div>
+              <div class="market__card"><span>Alcohol Prep Pads</span><b>$0.03</b><em class="down">−14% vs avg</em></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Pillar 4 -->
+      <article class="feature feature--light feature--reverse" data-feature>
+        <div class="feature__text">
+          <p class="eyebrow" data-reveal-heading>AI Patient Management</p>
+          <h2 class="feature__title" data-reveal-heading>A tireless front desk that never sleeps.</h2>
+          <p class="feature__lead">A multilingual AI scheduler handles appointments, reminders, intake and
+            follow-ups — integrated deeply with your EHR and live in days, not weeks.</p>
+          <ul class="feature__rows" data-rows>
+            <li data-row><span class="ico" data-ico="globe"></span><p><strong>Multilingual scheduling</strong>, 24/7, across every channel.</p></li>
+            <li data-row><span class="ico" data-ico="heart"></span><p><strong>30% less staff burnout</strong> by offloading repetitive work.</p></li>
+            <li data-row><span class="ico" data-ico="plug"></span><p><strong>Deep EHR integration</strong> — ModMed, Nextech & more.</p></li>
+            <li data-row><span class="ico" data-ico="rocket"></span><p><strong>Live in days</strong>, not weeks.</p></li>
+          </ul>
+        </div>
+        <div class="feature__plate" data-plate>
+          <div class="plate plate--chat">
+            <div class="chat">
+              <div class="chat__msg chat__msg--ai">Hi! This is Meridian for Bayview Pediatrics. Would you like to confirm Tuesday at 9:40am?</div>
+              <div class="chat__msg chat__msg--user">¿Pueden cambiarlo a la tarde?</div>
+              <div class="chat__msg chat__msg--ai">Claro — tengo las 3:15pm del martes disponible. ¿Lo reservo?</div>
+              <div class="chat__typing"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- =========================== STATS ============================ -->
+    <section class="stats" data-stats>
+      <p class="eyebrow" data-reveal-heading>By the Numbers</p>
+      <h2 class="stats__title" data-reveal-heading>Proof, not promises.</h2>
+      <div class="stats__grid">
+        <div class="stat" data-stat>
+          <span class="stat__ico" data-ico="dollar"></span>
+          <div class="stat__num"><span data-count data-to="1" data-prefix="$" data-suffix="B+">$0</span></div>
+          <p class="stat__label">Processed in payment volume annually</p>
+        </div>
+        <div class="stat" data-stat>
+          <span class="stat__ico" data-ico="building"></span>
+          <div class="stat__num"><span data-count data-to="700" data-suffix="+">0</span></div>
+          <p class="stat__label">Healthcare practices on the platform</p>
+        </div>
+        <div class="stat" data-stat>
+          <span class="stat__ico" data-ico="users"></span>
+          <div class="stat__num"><span data-count data-to="2500" data-suffix="+">0</span></div>
+          <p class="stat__label">Doctors &amp; healthcare admins</p>
+        </div>
+        <div class="stat" data-stat>
+          <span class="stat__ico" data-ico="spark"></span>
+          <div class="stat__num"><span data-count data-to="30" data-suffix="%">0</span></div>
+          <p class="stat__label">Average reduction in staff burnout</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== PINNED PLATFORM OVERVIEW ================= -->
+    <section class="overview" id="overview" data-overview>
+      <div class="overview__pin" data-overview-pin>
+        <div class="overview__head">
+          <p class="eyebrow" data-reveal-heading>Platform Overview</p>
+          <h2 class="overview__title" data-overview-title>One platform. Four ways to run a smarter practice.</h2>
+        </div>
+
+        <div class="overview__stage">
+          <div class="overview__steps">
+            <div class="overview__step" data-ov-step>
+              <span class="overview__index">01</span>
+              <h3>Practice Expense Card</h3>
+              <p>Spend with up to 2.2% cash back, instant virtual cards, and one-tap fraud control.</p>
+            </div>
+            <div class="overview__step" data-ov-step>
+              <span class="overview__index">02</span>
+              <h3>Finance &amp; Expense Management</h3>
+              <p>Automated bill pay, AI coding, and accounting sync that closes your books for you.</p>
+            </div>
+            <div class="overview__step" data-ov-step>
+              <span class="overview__index">03</span>
+              <h3>Procurement &amp; Marketplace</h3>
+              <p>AI price intelligence across 100,000+ products with live inventory and recurring orders.</p>
+            </div>
+            <div class="overview__step" data-ov-step>
+              <span class="overview__index">04</span>
+              <h3>AI Patient Management</h3>
+              <p>A multilingual AI front desk that schedules, reminds, and follows up — 24/7.</p>
+            </div>
+          </div>
+
+          <div class="overview__panels">
+            <div class="overview__panel" data-ov-panel>
+              <div class="plate plate--card"><div class="vcard"><div class="vcard__top"><span>MERIDIAN</span><i></i></div><div class="vcard__num">4821&nbsp;··&nbsp;··&nbsp;7390</div><div class="vcard__bot"><span>EXPENSE CARD</span><span>2.2%</span></div></div></div>
+            </div>
+            <div class="overview__panel" data-ov-panel>
+              <div class="plate plate--ledger"><div class="ledger"><div class="ledger__row ledger__row--head"><span>Vendor</span><span>Coded</span><span>Amt</span></div><div class="ledger__row"><span>McKesson</span><b>Supplies</b><span>$4,120</span></div><div class="ledger__row"><span>Cardinal</span><b>Recurring</b><span>$2,540</span></div></div></div>
+            </div>
+            <div class="overview__panel" data-ov-panel>
+              <div class="plate plate--market"><div class="market"><div class="market__card"><span>Nitrile Gloves</span><b>$8.40</b><em class="down">−18%</em></div><div class="market__card"><span>3mL Syringes</span><b>$0.12</b><em class="down">−9%</em></div></div></div>
+            </div>
+            <div class="overview__panel" data-ov-panel>
+              <div class="plate plate--chat"><div class="chat"><div class="chat__msg chat__msg--ai">Confirm Tuesday 9:40am?</div><div class="chat__msg chat__msg--user">Move to afternoon?</div><div class="chat__msg chat__msg--ai">3:15pm works — booked.</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="overview__progress"><i data-ov-progress></i></div>
+      </div>
+    </section>
+
+    <!-- ======================= TESTIMONIALS ======================== -->
+    <section class="quotes" data-quotes>
+      <p class="eyebrow" data-reveal-heading>Trusted by Healthcare Professionals</p>
+      <h2 class="quotes__title" data-reveal-heading>The people who run medicine, on Meridian.</h2>
+      <div class="quotes__grid">
+        <figure class="quote" data-quote>
+          <blockquote>“We cut our back-office hours nearly in half. For the first time my staff isn't drowning in expense reports.”</blockquote>
+          <figcaption><span class="avatar" data-initials="EM"></span><div><strong>Dr. Elena Marquez</strong><em>Owner, Cedar Valley Family Clinic</em></div></figcaption>
+        </figure>
+        <figure class="quote" data-quote>
+          <blockquote>“The cash back alone paid for a new ultrasound. The procurement intelligence is the part I tell every colleague about.”</blockquote>
+          <figcaption><span class="avatar" data-initials="JR"></span><div><strong>Dr. Julian Reyes</strong><em>Medical Director, Summit Orthopedics</em></div></figcaption>
+        </figure>
+        <figure class="quote" data-quote>
+          <blockquote>“Our AI scheduler handles three languages and never misses a follow-up. My front desk finally gets to breathe.”</blockquote>
+          <figcaption><span class="avatar" data-initials="AK"></span><div><strong>Aisha Karim, RN</strong><em>Practice Admin, Bayview Pediatrics</em></div></figcaption>
+        </figure>
+        <figure class="quote" data-quote>
+          <blockquote>“Onboarding took an afternoon. By the next week we'd consolidated four vendors and three logins into one.”</blockquote>
+          <figcaption><span class="avatar" data-initials="MT"></span><div><strong>Dr. Marcus Tran</strong><em>Founder, Lakeside Family Medicine</em></div></figcaption>
+        </figure>
+        <figure class="quote" data-quote>
+          <blockquote>“As a CFO across nine locations, real-time spend analytics changed how fast I can make decisions.”</blockquote>
+          <figcaption><span class="avatar" data-initials="PD"></span><div><strong>Priya Desai</strong><em>CFO, Northstar Health Group</em></div></figcaption>
+        </figure>
+        <figure class="quote" data-quote>
+          <blockquote>“I was skeptical of another fintech. Meridian is the first one that clearly understands how a clinic actually works.”</blockquote>
+          <figcaption><span class="avatar" data-initials="HC"></span><div><strong>Dr. Hannah Cole</strong><em>Owner, Vantage Dermatology</em></div></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============== HORIZONTAL GALLERY (pinned, scrub) ========== -->
+    <section class="gallery" data-gallery>
+      <div class="gallery__pin" data-gallery-pin>
+        <div class="gallery__head">
+          <p class="eyebrow">Product Spotlight</p>
+          <h2 class="gallery__title">Everything a modern practice needs.</h2>
+        </div>
+        <div class="gallery__track" data-gallery-track>
+          <article class="gcard" data-gcard>
+            <span class="gcard__ico" data-ico="card"></span>
+            <p class="gcard__cat eyebrow">Expense Card</p>
+            <h3 class="gcard__stat">2.2%</h3>
+            <p class="gcard__desc">cash back on medical & pharmaceutical purchases, with zero declines on high-volume buys.</p>
+          </article>
+          <article class="gcard" data-gcard>
+            <span class="gcard__ico" data-ico="clock"></span>
+            <p class="gcard__cat eyebrow">Finance Automation</p>
+            <h3 class="gcard__stat">100s</h3>
+            <p class="gcard__desc">of back-office hours saved each year through AI coding and accounting sync.</p>
+          </article>
+          <article class="gcard" data-gcard>
+            <span class="gcard__ico" data-ico="search"></span>
+            <p class="gcard__cat eyebrow">Procurement</p>
+            <h3 class="gcard__stat">100K+</h3>
+            <p class="gcard__desc">products scanned instantly by AI price intelligence to find your best price.</p>
+          </article>
+          <article class="gcard" data-gcard>
+            <span class="gcard__ico" data-ico="heart"></span>
+            <p class="gcard__cat eyebrow">Patient Management</p>
+            <h3 class="gcard__stat">30%</h3>
+            <p class="gcard__desc">less staff burnout with a multilingual AI front desk working 24/7.</p>
+          </article>
+          <article class="gcard" data-gcard>
+            <span class="gcard__ico" data-ico="rocket"></span>
+            <p class="gcard__cat eyebrow">Onboarding</p>
+            <h3 class="gcard__stat">5 min</h3>
+            <p class="gcard__desc">to get set up — live in days, not weeks, with white-glove migration.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================== PRICING ========================= -->
+    <section class="pricing feature--light" id="pricing" data-pricing>
+      <p class="eyebrow" data-reveal-heading>Pricing</p>
+      <h2 class="pricing__title" data-reveal-heading>Plans that scale with your practice.</h2>
+      <div class="pricing__grid">
+        <article class="tier" data-tier>
+          <h3 class="tier__name">Starter</h3>
+          <p class="tier__price">$0<span>/mo</span></p>
+          <p class="tier__note">For solo & small independent practices.</p>
+          <ul class="tier__list">
+            <li>Practice expense card</li>
+            <li>Up to 1.5% cash back</li>
+            <li>Basic spend analytics</li>
+            <li>QuickBooks & Xero sync</li>
+            <li>Email support</li>
+          </ul>
+          <a class="btn btn--ghost" href="#cta" data-magnetic-soft>Get Started</a>
+        </article>
+
+        <article class="tier tier--popular" data-tier>
+          <span class="tier__badge">Most Popular</span>
+          <h3 class="tier__name">Growth</h3>
+          <p class="tier__price">$149<span>/mo</span></p>
+          <p class="tier__note">For growing multi-provider clinics.</p>
+          <ul class="tier__list">
+            <li>Everything in Starter</li>
+            <li>Up to 2.2% cash back</li>
+            <li>AI transaction coding</li>
+            <li>Procurement marketplace</li>
+            <li>Real-time analytics & roles</li>
+            <li>Priority support</li>
+          </ul>
+          <a class="btn btn--primary btn--glow" href="#cta" data-magnetic>Get Started</a>
+        </article>
+
+        <article class="tier" data-tier>
+          <h3 class="tier__name">Enterprise</h3>
+          <p class="tier__price">Contact Us</p>
+          <p class="tier__note">For hospital groups & networks.</p>
+          <ul class="tier__list">
+            <li>Everything in Growth</li>
+            <li>AI patient management</li>
+            <li>Deep EHR integration</li>
+            <li>NetSuite & Sage sync</li>
+            <li>Dedicated success manager</li>
+            <li>Custom controls & SSO</li>
+          </ul>
+          <a class="btn btn--ghost" href="#cta" data-magnetic-soft>Talk to Sales</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============================ PRESS ========================== -->
+    <section class="press" id="press" data-press>
+      <p class="eyebrow" data-reveal-heading>In the Press</p>
+      <h2 class="press__title" data-reveal-heading>Meridian in the news.</h2>
+      <div class="press__grid">
+        <a class="pcard" data-pcard href="#">
+          <span class="pcard__pub">Fortune</span>
+          <h3>How one fintech startup is giving independent doctors their time back</h3>
+          <em>May 14, 2026</em>
+        </a>
+        <a class="pcard" data-pcard href="#">
+          <span class="pcard__pub">TechCrunch</span>
+          <h3>Meridian raises $187M to automate the business of medicine</h3>
+          <em>Apr 02, 2026</em>
+        </a>
+        <a class="pcard" data-pcard href="#">
+          <span class="pcard__pub">STAT News</span>
+          <h3>AI front desks are quietly reducing burnout at independent clinics</h3>
+          <em>Mar 21, 2026</em>
+        </a>
+        <a class="pcard" data-pcard href="#">
+          <span class="pcard__pub">Modern Healthcare</span>
+          <h3>The unbundling of practice management has a new contender</h3>
+          <em>Feb 09, 2026</em>
+        </a>
+      </div>
+    </section>
+
+    <!-- ========================= FINAL CTA ========================= -->
+    <section class="cta" id="cta" data-cta>
+      <div class="cta__glow" aria-hidden="true"></div>
+      <h2 class="cta__title" data-cta-title>Get started in 5 minutes. It's free.</h2>
+      <p class="cta__sub">No setup fees. No long contracts. Cancel anytime.</p>
+      <form class="cta__form" data-cta-form onsubmit="return false;">
+        <input type="email" placeholder="you@yourpractice.com" aria-label="Email address" />
+        <button class="btn btn--primary btn--glow" data-magnetic type="submit">See Demo</button>
+      </form>
+      <p class="cta__trust">Join 2,500+ healthcare professionals.</p>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ========================== -->
+  <footer class="footer">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a class="nav__brand" href="#top">
+          <svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
+            <path d="M6 38 V14 L24 30 L42 14 V38" fill="none" stroke="#5FC9C2"
+                  stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Meridian</span>
+        </a>
+        <p>Where independent medicine runs smarter.</p>
+        <div class="footer__social" data-social>
+          <a href="#" aria-label="X" data-soc>X</a>
+          <a href="#" aria-label="LinkedIn" data-soc>in</a>
+          <a href="#" aria-label="Instagram" data-soc>◎</a>
+          <a href="#" aria-label="YouTube" data-soc>▶</a>
+        </div>
+        <div class="footer__apps">
+          <span class="appbadge">▸ App Store</span>
+          <span class="appbadge">▸ Google Play</span>
+        </div>
+      </div>
+      <div class="footer__cols">
+        <div><h4>Products</h4><a href="#features">Expense Card</a><a href="#features">Finance</a><a href="#features">Procurement</a><a href="#features">AI Patient Mgmt</a></div>
+        <div><h4>Solutions</h4><a href="#overview">Independent Clinics</a><a href="#overview">Hospital Groups</a><a href="#overview">Specialty Practices</a><a href="#overview">Dental & Vision</a></div>
+        <div><h4>Resources</h4><a href="#press">Press</a><a href="#">Guides</a><a href="#">Help Center</a><a href="#">API Docs</a></div>
+        <div><h4>Company</h4><a href="#">About</a><a href="#">Careers</a><a href="#">Security</a><a href="#">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer__legal">
+      <p>© 2026 Meridian Financial Technologies, Inc. All rights reserved. Meridian is a financial
+        technology company, not a bank. Banking services provided by partner banks, Members FDIC.
+        The Meridian Practice Card is issued pursuant to a license. Cash back rates vary by category
+        and are subject to terms. This is a fictional concept created for portfolio purposes.</p>
+      <div class="footer__legal-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Compliance</a></div>
+    </div>
+  </footer>
+
+  <!-- Main entry (ES module — imports Three.js by relative path) -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
