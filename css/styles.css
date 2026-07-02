@@ -22,6 +22,8 @@
   --f-display: "Syne", "Inter", system-ui, sans-serif;
   --f-body:    "Inter", system-ui, -apple-system, sans-serif;
   --f-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  /* Numerals use Inter (not Syne) for instant legibility of stats & prices */
+  --f-num:     "Inter", system-ui, -apple-system, sans-serif;
 
   /* Rhythm */
   --maxw: 1240px;
@@ -252,7 +254,7 @@ body.cursor-active .cursor__dot { box-shadow: 0 0 18px rgba(95,201,194,1); }
 .mock__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .mock__kpi { background: var(--panel); border:1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; }
 .mock__kpi span { font-size: .62rem; color: var(--body); text-transform: uppercase; letter-spacing: .08em; }
-.mock__kpi strong { font-family: var(--f-display); font-size: 1.25rem; color: var(--display); }
+.mock__kpi strong { font-family: var(--f-num); font-weight: 800; font-size: 1.25rem; color: var(--display); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 .mock__kpi em { font-size: .62rem; font-style: normal; }
 .mock__kpi .up { color: var(--accent); }
 .mock__chart { background: var(--panel); border:1px solid var(--line); border-radius: 10px; padding: 8px; height: 90px; }
@@ -349,7 +351,7 @@ body.cursor-active .cursor__dot { box-shadow: 0 0 18px rgba(95,201,194,1); }
 .market { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
 .market__card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
 .market__card span { font-size: .72rem; color: var(--body); }
-.market__card b { font-family: var(--f-display); font-size: 1.4rem; color: var(--display); }
+.market__card b { font-family: var(--f-num); font-weight: 800; font-size: 1.4rem; color: var(--display); font-variant-numeric: tabular-nums; }
 .market__card em { font-size: .64rem; font-style: normal; }
 .down { color: var(--accent); }
 
@@ -373,8 +375,8 @@ body.cursor-active .cursor__dot { box-shadow: 0 0 18px rgba(95,201,194,1); }
 .stat__ico { width: 48px; height: 48px; border-radius: 14px; background: rgba(95,201,194,.12); border:1px solid rgba(95,201,194,.3); position: relative; }
 .stat__ico::before { content:""; position: absolute; inset: 0; background: var(--accent);
   -webkit-mask: center / 24px 24px no-repeat var(--gly); mask: center / 24px 24px no-repeat var(--gly); }
-.stat__num { font-family: var(--f-display); font-weight: 800; font-size: clamp(2.6rem, 6vw, 4.6rem);
-  color: var(--display); font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -0.03em; }
+.stat__num { font-family: var(--f-num); font-weight: 800; font-size: clamp(2.6rem, 6vw, 4.6rem);
+  color: var(--display); font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -0.02em; }
 .stat__label { font-size: .92rem; max-width: 18ch; color: var(--body); }
 
 /* ============================================================ OVERVIEW (pinned) */
@@ -439,8 +441,8 @@ body.cursor-active .cursor__dot { box-shadow: 0 0 18px rgba(95,201,194,1); }
 .gcard__ico::before { content:""; position:absolute; inset:0; background: var(--accent);
   -webkit-mask: center / 26px 26px no-repeat var(--gly); mask: center / 26px 26px no-repeat var(--gly); }
 .gcard__cat { margin: 0 0 .6rem; }
-.gcard__stat { font-family: var(--f-display); font-weight: 800; font-size: clamp(3rem, 6vw, 4.6rem);
-  color: var(--accent); line-height: 1; letter-spacing: -.03em; margin-bottom: .8rem; }
+.gcard__stat { font-family: var(--f-num); font-weight: 800; font-size: clamp(3rem, 6vw, 4.6rem);
+  color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -.02em; margin-bottom: .8rem; }
 .gcard__desc { font-size: 1rem; color: var(--body); }
 
 /* ============================================================== PRICING */
@@ -460,7 +462,7 @@ body.cursor-active .cursor__dot { box-shadow: 0 0 18px rgba(95,201,194,1); }
   background: var(--accent); color: #04181c; font-size: .68rem; font-weight: 700; letter-spacing: .12em;
   text-transform: uppercase; padding: .4em 1em; border-radius: 999px; font-family: var(--f-mono); }
 .tier__name { color: var(--light-ink); font-size: 1.3rem; margin-bottom: .6rem; }
-.tier__price { font-family: var(--f-display); font-weight: 800; font-size: 2.6rem; color: var(--light-ink); margin-bottom: .3rem; }
+.tier__price { font-family: var(--f-num); font-weight: 800; font-size: 2.6rem; color: var(--light-ink); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; margin-bottom: .3rem; }
 .tier__price span { font-size: 1rem; font-weight: 500; color: var(--light-body); }
 .tier__note { color: var(--light-body); font-size: .9rem; margin-bottom: 1.6rem; }
 .tier__list { display: flex; flex-direction: column; gap: .8rem; margin-bottom: 2rem; }
