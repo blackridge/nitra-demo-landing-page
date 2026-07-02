@@ -688,6 +688,31 @@ function addPlateTilt(plate) {
   wrap.addEventListener("pointerleave", () => { rotX(0); rotY(0); });
 }
 
+/* Hero dashboard card — pointer-driven 3D tilt around its resting angle.
+   The CSS resting transform is rotateY(-7deg) rotateX(2deg); GSAP takes over
+   the transform, so we re-establish that base and lean away from it toward
+   the cursor. Disabled on touch / mobile (card hidden) / reduced motion. */
+function initHeroTilt() {
+  if (IS_TOUCH || IS_MOBILE || REDUCED) return;
+  const wrap = document.querySelector("[data-hero-mock]");
+  const mock = wrap && wrap.querySelector(".mock");
+  if (!mock) return;
+
+  const baseY = -7, baseX = 2, range = 10; // degrees of lean at the edges
+  const rotY = gsap.quickTo(mock, "rotationY", { duration: 0.6, ease: "power3" });
+  const rotX = gsap.quickTo(mock, "rotationX", { duration: 0.6, ease: "power3" });
+  rotY(baseY); rotX(baseX); // hand the resting angle to GSAP
+
+  wrap.addEventListener("pointermove", (e) => {
+    const r = wrap.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    rotY(baseY + px * range);
+    rotX(baseX - py * range);
+  });
+  wrap.addEventListener("pointerleave", () => { rotY(baseY); rotX(baseX); });
+}
+
 /* ============================================================================
    16. STATS COUNT-UP — onEnter counter per stat, with section stagger.
 ============================================================================ */
@@ -900,6 +925,7 @@ function init() {
   initMagnetic();
   initSkew();
   initMarquee();
+  initHeroTilt();
 
   // SplitText needs final font metrics, so build line reveals only once fonts
   // are ready (avoids "SplitText called before fonts loaded" + wrong wraps).
